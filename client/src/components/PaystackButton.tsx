@@ -30,7 +30,7 @@ const PaystackButton = ({
     setIsProcessing(true);
     
     // Get Paystack public key from environment variables
-    const paystackPublicKey = process.env.VITE_PAYSTACK_PUBLIC_KEY || "";
+    const paystackPublicKey = import.meta.env.VITE_PAYSTACK_PUBLIC_KEY || "";
     
     if (!paystackPublicKey) {
       toast({
@@ -69,9 +69,9 @@ const PaystackButton = ({
   const initializePayment = () => {
     try {
       const handler = (window as any).PaystackPop.setup({
-        key: process.env.VITE_PAYSTACK_PUBLIC_KEY,
+        key: import.meta.env.VITE_PAYSTACK_PUBLIC_KEY,
         email: email,
-        amount: amount * 100, // Paystack expects amount in kobo (smallest currency unit)
+        amount: amount, // Amount should already be in the smallest currency unit
         currency: "NGN", // Nigerian Naira
         ref: `ref-${Date.now()}`, // Generate a reference
         onClose: () => {
