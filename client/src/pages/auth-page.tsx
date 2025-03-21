@@ -44,7 +44,10 @@ const registerSchema = z.object({
 
 const AuthPage = () => {
   const { user, loginMutation, registerMutation, isLoading } = useAuth();
-  const [, setLocation] = useLocation();
+  const [location, setLocation] = useLocation();
+
+  // Set the active tab based on the URL hash (if present)
+  const defaultTab = location === "/auth" ? "login" : "register";
   
   const loginForm = useForm<z.infer<typeof loginSchema>>({
     resolver: zodResolver(loginSchema),
@@ -89,7 +92,7 @@ const AuthPage = () => {
               <div className="p-8">
                 <h1 className="font-['Playfair_Display'] text-2xl font-bold text-[#0F172A] mb-6">Your Account</h1>
                 
-                <Tabs defaultValue="login">
+                <Tabs defaultValue={defaultTab}>
                   <TabsList className="grid w-full grid-cols-2 mb-6">
                     <TabsTrigger value="login">Login</TabsTrigger>
                     <TabsTrigger value="register">Register</TabsTrigger>

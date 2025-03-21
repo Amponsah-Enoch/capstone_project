@@ -48,7 +48,7 @@ const HomePage = () => {
               <Button className="bg-[#DCA54C] hover:bg-[#C4902F] text-white font-['Montserrat'] font-semibold px-8 py-6 rounded-md">
                 View Auctions
               </Button>
-              <Button variant="outline" className="border-2 border-white hover:bg-white hover:text-[#0F172A] text-white font-['Montserrat'] font-semibold px-8 py-6 rounded-md">
+              <Button variant="outline" className="border-2 border-white bg-white/20 hover:bg-white text-white hover:text-[#0F172A] font-['Montserrat'] font-semibold px-8 py-6 rounded-md">
                 Shop Fixed Price
               </Button>
             </div>

@@ -59,7 +59,7 @@ const Navbar = () => {
             <div className="hidden md:block">
               <Link href="/auth" className="text-neutral-700 hover:text-[#0F172A] font-medium transition-all">Log In</Link>
               <span className="mx-2 text-neutral-300">|</span>
-              <Link href="/auth?tab=register" className="text-[#0F172A] hover:text-[#1E293B] font-medium transition-all">Register</Link>
+              <Link href="/auth" className="text-[#0F172A] hover:text-[#1E293B] font-medium transition-all">Register</Link>
             </div>
           ) : (
             <DropdownMenu>
@@ -159,7 +159,7 @@ const Navbar = () => {
                         Log In
                       </Link>
                       <Link 
-                        href="/auth?tab=register" 
+                        href="/auth" 
                         className="text-white font-medium py-2 px-4 rounded bg-[#0F172A]"
                         onClick={() => setIsMobileMenuOpen(false)}
                       >
