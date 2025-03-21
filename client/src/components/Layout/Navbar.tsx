@@ -47,6 +47,7 @@ const Navbar = () => {
           <Link href="/" className="text-neutral-700 hover:text-[#0F172A] transition-all">Home</Link>
           <Link href="/auctions" className="text-neutral-700 hover:text-[#0F172A] transition-all">Auctions</Link>
           <Link href="/shop" className="text-neutral-700 hover:text-[#0F172A] transition-all">Shop</Link>
+          <Link href="/celebrities" className="text-neutral-700 hover:text-[#0F172A] transition-all">Celebrities</Link>
           <Link href="/about" className="text-neutral-700 hover:text-[#0F172A] transition-all">About</Link>
         </div>
         
@@ -132,6 +133,13 @@ const Navbar = () => {
                   onClick={() => setIsMobileMenuOpen(false)}
                 >
                   Shop
+                </Link>
+                <Link 
+                  href="/celebrities" 
+                  className="text-lg font-medium"
+                  onClick={() => setIsMobileMenuOpen(false)}
+                >
+                  Celebrities
                 </Link>
                 <Link 
                   href="/about" 
