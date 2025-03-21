@@ -11,12 +11,18 @@ import ProductDetails from "@/pages/product-details";
 import Checkout from "@/pages/checkout";
 import AdminDashboard from "@/pages/admin-dashboard";
 import Profile from "@/pages/profile";
+import ShopPage from "@/pages/shop-page";
+import AuctionPage from "@/pages/auction-page";
+import AboutPage from "@/pages/about-page";
 import { ProtectedRoute } from "./lib/protected-route";
 
 function Router() {
   return (
     <Switch>
       <Route path="/" component={HomePage} />
+      <Route path="/shop" component={ShopPage} />
+      <Route path="/auctions" component={AuctionPage} />
+      <Route path="/about" component={AboutPage} />
       <Route path="/auth" component={AuthPage} />
       <Route path="/product/:id" component={ProductDetails} />
       <ProtectedRoute path="/checkout" component={Checkout} />
