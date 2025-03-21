@@ -44,7 +44,7 @@ const Navbar = () => {
         </Link>
         
         <div className="hidden md:flex items-center space-x-8">
-          <Link href="/" className="text-neutral-700 hover:text-[#0F172A] transition-all">Home</Link>
+          <Link href="/" className="text-neutral-700 hover:text-[#0F172A] font-medium transition-all">Home</Link>
           <Link href="/auctions" className="text-neutral-700 hover:text-[#0F172A] transition-all">Auctions</Link>
           <Link href="/shop" className="text-neutral-700 hover:text-[#0F172A] transition-all">Shop</Link>
           <Link href="/celebrities" className="text-neutral-700 hover:text-[#0F172A] transition-all">Celebrities</Link>
@@ -58,10 +58,13 @@ const Navbar = () => {
           
           {/* Login/Register OR User Menu */}
           {!user ? (
-            <div className="hidden md:block">
-              <Link href="/auth" className="text-neutral-700 hover:text-[#0F172A] font-medium transition-all">Log In</Link>
-              <span className="mx-2 text-neutral-300">|</span>
-              <Link href="/auth" className="text-[#0F172A] hover:text-[#1E293B] font-medium transition-all">Register</Link>
+            <div className="hidden md:flex items-center gap-2">
+              <Link href="/auth">
+                <Button variant="ghost" className="text-neutral-700 hover:text-[#0F172A] font-medium">Log In</Button>
+              </Link>
+              <Link href="/auth">
+                <Button className="bg-[#0F172A] hover:bg-[#1E293B] text-white font-medium">Register</Button>
+              </Link>
             </div>
           ) : (
             <DropdownMenu>

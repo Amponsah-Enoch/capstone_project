@@ -8,7 +8,6 @@ import { useToast } from "@/hooks/use-toast";
 import { useCart } from "@/components/ShoppingCart";
 import Navbar from "@/components/Layout/Navbar";
 import Footer from "@/components/Layout/Footer";
-import PaystackButton from "@/components/PaystackButton";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -22,7 +21,7 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Loader2, CreditCard, Check } from "lucide-react";
+import { Check } from "lucide-react";
 import { 
   Card, 
   CardContent, 
@@ -32,6 +31,7 @@ import {
   CardTitle 
 } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
+import PaymentForm from "@/components/PaymentForm";
 
 const Checkout = () => {
   const { user } = useAuth();
@@ -51,9 +51,6 @@ const Checkout = () => {
     city: z.string().min(2, "City is required"),
     state: z.string().min(2, "State is required"),
     zipCode: z.string().min(4, "Zip code is required"),
-    cardNumber: z.string().regex(/^\d{16}$/, "Card number must be 16 digits"),
-    expiryDate: z.string().regex(/^\d{2}\/\d{2}$/, "Expiry date must be in MM/YY format"),
-    cvv: z.string().regex(/^\d{3,4}$/, "CVV must be 3 or 4 digits"),
   });
   
   const form = useForm<z.infer<typeof formSchema>>({
@@ -65,9 +62,6 @@ const Checkout = () => {
       city: "",
       state: "",
       zipCode: "",
-      cardNumber: "",
-      expiryDate: "",
-      cvv: "",
     },
   });
   
@@ -76,6 +70,7 @@ const Checkout = () => {
       const orderData = {
         total,
         paymentReference,
+        status: "pending",
         items: cartItems.map(item => ({
           productId: item.product.id,
           price: item.product.price,
@@ -109,38 +104,12 @@ const Checkout = () => {
     },
   });
   
-  const onSubmit = async (values: z.infer<typeof formSchema>) => {
-    if (!user) {
-      toast({
-        title: "Authentication required",
-        description: "Please log in to complete your purchase",
-        variant: "destructive",
-      });
-      setLocation("/auth");
-      return;
-    }
-    
+  const handlePaymentSuccess = (paymentReference: string) => {
     setPaymentProcessing(true);
-    
-    // In a real app, this would be integrated with Paystack's API
-    // For this demo, we'll simulate a successful payment
-    setTimeout(async () => {
-      try {
-        // Generate a fake payment reference
-        const paymentReference = `PAY-${Date.now()}-${Math.floor(Math.random() * 1000000)}`;
-        await createOrderMutation.mutateAsync(paymentReference);
-      } catch (error) {
-        setPaymentProcessing(false);
-        toast({
-          title: "Payment failed",
-          description: error instanceof Error ? error.message : "An error occurred during payment",
-          variant: "destructive",
-        });
-      }
-    }, 2000);
+    createOrderMutation.mutate(paymentReference);
   };
   
-  // Show loading spinner if cart is empty and user navigated here directly
+  // Show empty cart message if cart is empty
   if (cartItems.length === 0) {
     return (
       <div className="min-h-screen flex flex-col">
@@ -254,7 +223,7 @@ const Checkout = () => {
                   </CardHeader>
                   <CardContent>
                     <Form {...form}>
-                      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+                      <form className="space-y-6">
                         <div className="space-y-4">
                           <h3 className="font-medium text-lg">Billing Information</h3>
                           
@@ -349,66 +318,17 @@ const Checkout = () => {
                         
                         <Separator />
                         
-                        <div className="space-y-4">
-                          <h3 className="font-medium text-lg">Payment Details</h3>
-                          
-                          <FormField
-                            control={form.control}
-                            name="cardNumber"
-                            render={({ field }) => (
-                              <FormItem>
-                                <FormLabel>Card Number</FormLabel>
-                                <FormControl>
-                                  <Input placeholder="1234 5678 9012 3456" {...field} />
-                                </FormControl>
-                                <FormMessage />
-                              </FormItem>
-                            )}
-                          />
-                          
-                          <div className="grid grid-cols-2 gap-4">
-                            <FormField
-                              control={form.control}
-                              name="expiryDate"
-                              render={({ field }) => (
-                                <FormItem>
-                                  <FormLabel>Expiry Date</FormLabel>
-                                  <FormControl>
-                                    <Input placeholder="MM/YY" {...field} />
-                                  </FormControl>
-                                  <FormMessage />
-                                </FormItem>
-                              )}
-                            />
-                            
-                            <FormField
-                              control={form.control}
-                              name="cvv"
-                              render={({ field }) => (
-                                <FormItem>
-                                  <FormLabel>CVV</FormLabel>
-                                  <FormControl>
-                                    <Input placeholder="123" {...field} />
-                                  </FormControl>
-                                  <FormMessage />
-                                </FormItem>
-                              )}
-                            />
-                          </div>
-                        </div>
-                        
-                        <Button 
-                          type="submit" 
-                          className="w-full bg-[#DCA54C] hover:bg-[#C4902F] text-white py-6 text-lg"
-                          disabled={paymentProcessing}
-                        >
-                          {paymentProcessing ? (
-                            <Loader2 className="mr-2 h-5 w-5 animate-spin" />
-                          ) : (
-                            <CreditCard className="mr-2 h-5 w-5" />
-                          )}
-                          {paymentProcessing ? "Processing Payment..." : `Pay $${total.toLocaleString()}`}
-                        </Button>
+                        {/* Integrated Payment Form Component */}
+                        <PaymentForm 
+                          amount={total} 
+                          onSuccess={handlePaymentSuccess}
+                          onCancel={() => {
+                            toast({
+                              title: "Payment Cancelled",
+                              description: "You cancelled the payment process.",
+                            });
+                          }}
+                        />
                       </form>
                     </Form>
                   </CardContent>
@@ -418,7 +338,7 @@ const Checkout = () => {
                         <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
                         <path d="M7 11V7a5 5 0 0 1 10 0v4" />
                       </svg>
-                      <span>Secure payment powered by Paystack</span>
+                      <span>Secure payment powered by Stripe</span>
                     </div>
                   </CardFooter>
                 </Card>
