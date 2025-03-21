@@ -45,8 +45,8 @@ const Navbar = () => {
         
         <div className="hidden md:flex items-center space-x-8">
           <Link href="/" className="text-neutral-700 hover:text-[#0F172A] transition-all">Home</Link>
-          <Link href="/products/auctions" className="text-neutral-700 hover:text-[#0F172A] transition-all">Auctions</Link>
-          <Link href="/products/fixed-price" className="text-neutral-700 hover:text-[#0F172A] transition-all">Shop</Link>
+          <Link href="/auctions" className="text-neutral-700 hover:text-[#0F172A] transition-all">Auctions</Link>
+          <Link href="/shop" className="text-neutral-700 hover:text-[#0F172A] transition-all">Shop</Link>
           <Link href="/about" className="text-neutral-700 hover:text-[#0F172A] transition-all">About</Link>
         </div>
         
@@ -120,14 +120,14 @@ const Navbar = () => {
                   Home
                 </Link>
                 <Link 
-                  href="/products/auctions" 
+                  href="/auctions" 
                   className="text-lg font-medium"
                   onClick={() => setIsMobileMenuOpen(false)}
                 >
                   Auctions
                 </Link>
                 <Link 
-                  href="/products/fixed-price" 
+                  href="/shop" 
                   className="text-lg font-medium"
                   onClick={() => setIsMobileMenuOpen(false)}
                 >
