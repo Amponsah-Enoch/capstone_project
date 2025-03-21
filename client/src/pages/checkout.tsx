@@ -1,10 +1,11 @@
 import { useState } from "react";
-import { useQuery, useMutation } from "@tanstack/react-query";
+import { useMutation } from "@tanstack/react-query";
 import { useLocation } from "wouter";
 import { Product } from "@shared/schema";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { useAuth } from "@/hooks/use-auth";
 import { useToast } from "@/hooks/use-toast";
+import { useCart } from "@/components/ShoppingCart";
 import Navbar from "@/components/Layout/Navbar";
 import Footer from "@/components/Layout/Footer";
 import PaystackButton from "@/components/PaystackButton";
@@ -32,25 +33,16 @@ import {
 } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 
-// Simulate cart using fixed price products (in a real app, this would be stored in state or localStorage)
 const Checkout = () => {
   const { user } = useAuth();
   const { toast } = useToast();
+  const { cartItems, cartTotal, clearCart } = useCart();
   const [, setLocation] = useLocation();
   const [paymentProcessing, setPaymentProcessing] = useState(false);
   const [paymentSuccess, setPaymentSuccess] = useState(false);
   
-  // Using fixed-price products for checkout
-  const { data: products, isLoading } = useQuery<Product[]>({
-    queryKey: ["/api/products/fixed-price"],
-  });
-  
-  // For demo purposes, we'll just use the first two products
-  const cartItems = products?.slice(0, 2) || [];
-  
-  const subtotal = cartItems.reduce((sum, item) => sum + item.price, 0);
   const shipping = 25; // Fixed shipping cost
-  const total = subtotal + shipping;
+  const total = cartTotal + shipping;
   
   const formSchema = z.object({
     fullName: z.string().min(3, "Full name is required"),
@@ -85,9 +77,9 @@ const Checkout = () => {
         total,
         paymentReference,
         items: cartItems.map(item => ({
-          productId: item.id,
-          price: item.price,
-          quantity: 1,
+          productId: item.product.id,
+          price: item.product.price,
+          quantity: item.quantity,
         })),
       };
       
@@ -97,12 +89,12 @@ const Checkout = () => {
     onSuccess: () => {
       setPaymentProcessing(false);
       setPaymentSuccess(true);
+      clearCart(); // Clear the cart after successful purchase
       toast({
         title: "Order placed successfully!",
         description: "Your order has been confirmed.",
       });
       
-      // In a real app, you would clear the cart here
       setTimeout(() => {
         setLocation("/profile");
       }, 3000);
@@ -148,12 +140,20 @@ const Checkout = () => {
     }, 2000);
   };
   
-  if (isLoading) {
+  // Show loading spinner if cart is empty and user navigated here directly
+  if (cartItems.length === 0) {
     return (
       <div className="min-h-screen flex flex-col">
         <Navbar />
-        <div className="flex-grow flex items-center justify-center">
-          <Loader2 className="h-10 w-10 animate-spin text-[#DCA54C]" />
+        <div className="flex-grow flex flex-col items-center justify-center gap-6 px-4 text-center">
+          <h2 className="font-['Playfair_Display'] text-2xl font-bold text-[#0F172A]">Your cart is empty</h2>
+          <p className="text-neutral-500 max-w-md">Looks like you haven't added any items to your cart yet. Browse our collection to find something special.</p>
+          <Button 
+            onClick={() => setLocation("/")}
+            className="bg-[#0F172A] hover:bg-[#1E293B]"
+          >
+            Continue Shopping
+          </Button>
         </div>
         <Footer />
       </div>
@@ -202,18 +202,23 @@ const Checkout = () => {
                   <CardContent>
                     <div className="space-y-4">
                       {cartItems.map(item => (
-                        <div key={item.id} className="flex gap-4">
+                        <div key={item.product.id} className="flex gap-4">
                           <div className="w-16 h-16 rounded overflow-hidden flex-shrink-0">
                             <img 
-                              src={item.imageUrl} 
-                              alt={item.name} 
+                              src={item.product.imageUrl} 
+                              alt={item.product.name} 
                               className="w-full h-full object-cover"
                             />
                           </div>
                           <div className="flex-grow">
-                            <h4 className="font-medium">{item.name}</h4>
-                            <p className="text-sm text-neutral-500">{item.celebrityName}</p>
-                            <p className="font-['Montserrat'] font-semibold mt-1">${item.price.toLocaleString()}</p>
+                            <h4 className="font-medium">{item.product.name}</h4>
+                            <p className="text-sm text-neutral-500">{item.product.celebrityName}</p>
+                            <div className="flex justify-between mt-1">
+                              <p className="font-['Montserrat'] font-semibold">${item.product.price.toLocaleString()}</p>
+                              {item.quantity > 1 && (
+                                <p className="text-sm text-neutral-500">x{item.quantity}</p>
+                              )}
+                            </div>
                           </div>
                         </div>
                       ))}
@@ -224,7 +229,7 @@ const Checkout = () => {
                     <div className="space-y-2">
                       <div className="flex justify-between">
                         <span className="text-neutral-500">Subtotal</span>
-                        <span>${subtotal.toLocaleString()}</span>
+                        <span>${cartTotal.toLocaleString()}</span>
                       </div>
                       <div className="flex justify-between">
                         <span className="text-neutral-500">Shipping</span>
