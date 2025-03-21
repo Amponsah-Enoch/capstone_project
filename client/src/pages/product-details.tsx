@@ -7,6 +7,7 @@ import Footer from "@/components/Layout/Footer";
 import AuctionTimer from "@/components/AuctionTimer";
 import { useAuth } from "@/hooks/use-auth";
 import { useToast } from "@/hooks/use-toast";
+import { useCart } from "@/components/ShoppingCart";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -32,6 +33,7 @@ const ProductDetails = () => {
   const productId = parseInt(id);
   const { user } = useAuth();
   const { toast } = useToast();
+  const { addToCart } = useCart();
   const [, setLocation] = useLocation();
   const [processingCart, setProcessingCart] = useState(false);
 
@@ -129,7 +131,7 @@ const ProductDetails = () => {
     await bidMutation.mutateAsync(values.amount);
   }
 
-  const addToCart = async () => {
+  const handleAddToCart = async () => {
     if (!user) {
       toast({
         title: "Authentication required",
@@ -143,16 +145,9 @@ const ProductDetails = () => {
     setProcessingCart(true);
     
     try {
-      // For simplicity, we'll just redirect to checkout
-      // In a real app, you'd add this to a cart in local storage or the backend
-      toast({
-        title: "Item added to cart",
-        description: "Redirecting to checkout...",
-      });
-      
-      setTimeout(() => {
-        setLocation("/checkout");
-      }, 1500);
+      if (product) {
+        addToCart(product);
+      }
     } catch (error) {
       toast({
         title: "Failed to add to cart",
@@ -358,7 +353,7 @@ const ProductDetails = () => {
                 
                 <Button 
                   className="w-full bg-[#0F172A] hover:bg-[#1E293B] text-white py-6 text-lg"
-                  onClick={addToCart}
+                  onClick={handleAddToCart}
                   disabled={processingCart}
                 >
                   {processingCart ? (

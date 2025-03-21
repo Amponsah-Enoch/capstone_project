@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Link, useLocation } from "wouter";
 import { useAuth } from "@/hooks/use-auth";
+import ShoppingCart from "@/components/ShoppingCart";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import {
@@ -16,7 +17,7 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet";
 import { Badge } from "@/components/ui/badge";
-import { Search, Menu, User, ShoppingBag, LogOut, Settings } from "lucide-react";
+import { Search, Menu, User, LogOut, Settings, ShoppingBag } from "lucide-react";
 
 const Navbar = () => {
   const { user, logoutMutation } = useAuth();
@@ -99,16 +100,8 @@ const Navbar = () => {
             </DropdownMenu>
           )}
           
-          {/* Shopping Bag */}
-          <button 
-            className="relative text-neutral-700 hover:text-[#0F172A] transition-all"
-            onClick={() => setLocation("/checkout")}
-          >
-            <ShoppingBag className="h-5 w-5" />
-            <Badge className="absolute -top-2 -right-2 h-5 w-5 p-0 flex items-center justify-center rounded-full bg-[#DCA54C] text-white text-xs">
-              0
-            </Badge>
-          </button>
+          {/* Shopping Cart */}
+          <ShoppingCart />
           
           {/* Mobile Menu Button */}
           <Sheet open={isMobileMenuOpen} onOpenChange={setIsMobileMenuOpen}>
